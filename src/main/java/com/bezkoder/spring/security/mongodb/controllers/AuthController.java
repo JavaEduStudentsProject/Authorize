@@ -78,12 +78,13 @@ public class AuthController {
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    Role nj = new Role(ERole.ROLE_ADMIN);
-    Role nj1 = new Role(ERole.ROLE_USER);
-    Role nj2 = new Role(ERole.ROLE_MODERATOR);
-    roleRepository.save(nj);
-    roleRepository.save(nj1);
-    roleRepository.save(nj2);
+//    Role nj = new Role(ERole.ROLE_ADMIN);
+//    Role nj1 = new Role(ERole.ROLE_USER);
+//    Role nj2 = new Role(ERole.ROLE_MODERATOR);
+//    roleRepository.save(nj);
+//    roleRepository.save(nj1);
+//    roleRepository.save(nj2);
+    System.out.println(signUpRequest.getUsername());
 
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
