@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.bezkoder.spring.security.mongodb.kafka.MessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -40,6 +41,9 @@ import com.bezkoder.spring.security.mongodb.security.services.UserDetailsImpl;
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
+
+  @Autowired
+  MessageProducer mp;
 
   @Autowired
   UserRepository userRepository;
@@ -132,6 +136,7 @@ public class AuthController {
         }
       });
     }
+
 
     user.setRoles(roles);
     userRepository.save(user);

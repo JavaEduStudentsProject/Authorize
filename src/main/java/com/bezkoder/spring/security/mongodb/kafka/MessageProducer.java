@@ -17,14 +17,14 @@ public class MessageProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendMessage(String product, String topicName) {
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName,product);
+    public void sendMessage(String user, String topicName) {
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName,user);
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
 
             @Override
             public void onFailure(Throwable throwable) {
-                log.error("Unable to send message = {} dut to: {}", product, throwable.getMessage());
+                log.error("Unable to send message = {} dut to: {}", user, throwable.getMessage());
             }
 
             @Override

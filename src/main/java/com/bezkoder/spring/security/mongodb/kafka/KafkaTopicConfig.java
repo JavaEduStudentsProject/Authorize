@@ -28,9 +28,9 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic sendParsedString() {
-        log.info("Create topic sendParsedString");
-        return new NewTopic("sendParsedString", 2, (short) 1);
+    public NewTopic registerUser() {
+        log.info("Create topic registerUser");
+        return new NewTopic("registerUser", 2, (short) 1);
     }
 
     @Bean
