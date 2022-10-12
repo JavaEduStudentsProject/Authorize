@@ -39,4 +39,9 @@ public class KafkaTopicConfig {
         return new NewTopic("parseFileParser", 1, (short) 1);
     }
 
+    @Bean
+    public NewTopic sendUser() {
+        log.info("Create topic sendUser");
+        return new NewTopic("SendUser", 1, (short) 1);
+    }
 }
