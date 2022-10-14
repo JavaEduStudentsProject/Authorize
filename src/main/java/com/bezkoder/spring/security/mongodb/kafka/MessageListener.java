@@ -41,7 +41,6 @@ public class MessageListener {
             for (ConsumerRecord<String, User> record : userRecords)
             {
                 user = record.value();
-                System.out.println(user);
                 return user;
             }
         }

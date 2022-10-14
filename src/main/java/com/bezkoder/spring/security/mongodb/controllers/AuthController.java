@@ -2,6 +2,7 @@ package com.bezkoder.spring.security.mongodb.controllers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,9 @@ import javax.validation.Valid;
 
 import com.bezkoder.spring.security.mongodb.kafka.MessageListener;
 import com.bezkoder.spring.security.mongodb.kafka.MessageProducer;
+import com.bezkoder.spring.security.mongodb.kafka.MessageUserProducer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +46,9 @@ public class AuthController {
   MessageProducer mp;
 
   @Autowired
+  MessageUserProducer messageUserProducer;
+
+  @Autowired
   UserRepository userRepository;
 
   @Autowired
@@ -56,6 +62,9 @@ public class AuthController {
 
   @Autowired
   MessageListener ml;
+
+  @Autowired
+  private MongoTemplate mt;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -89,21 +98,22 @@ public class AuthController {
 //    roleRepository.save(nj1);
 //    roleRepository.save(nj2);
     System.out.println(signUpRequest.getUsername());
-
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
-    }
-
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
+    List<User> list= mt.findAll(User.class);
+    for (User l: list) {
+      if(l.getUsername().equals(signUpRequest.getUsername())) {
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Error: Username is already taken!"));
+      }
+      if(l.getEmail().equals(signUpRequest.getEmail())) {
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Error: Email is already taken!"));
+      }
     }
 
     // Create new user's account
-    User user = new User(signUpRequest.getUsername(), 
+    User user = new User(signUpRequest.getUsername(),
                          signUpRequest.getEmail(),
                          encoder.encode(signUpRequest.getPassword()));
 
@@ -116,32 +126,19 @@ public class AuthController {
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
-        switch (role) {
-        case "admin":
+        if ("admin".equals(role)) {
           Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                  .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
           roles.add(adminRole);
-
-          break;
-        case "mod":
-          Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(modRole);
-
-          break;
-        default:
+        } else {
           Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                  .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
           roles.add(userRole);
         }
       });
     }
-
-
     user.setRoles(roles);
-    userRepository.save(user);
-
-
+    messageUserProducer.sendMessage(user, "SaveUser");
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
