@@ -9,17 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bezkoder.spring.security.mongodb.models.User;
-import com.bezkoder.spring.security.mongodb.repository.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
   @Autowired
-  UserRepository userRepository;
-
-  @Autowired
   MessageListener ml;
-
-
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

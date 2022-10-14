@@ -4,7 +4,6 @@ import com.bezkoder.spring.security.mongodb.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 
 import java.util.Collections;
@@ -18,9 +17,7 @@ public class MessageListener {
     ConcurrentKafkaListenerContainerFactory<String, User> factory;
 
     @Autowired
-            KafkaConsumerConfig config;
-
-     KafkaListener kl;
+    KafkaConsumerConfig config;
 
     private final String topic = "SendUser";
 
@@ -30,9 +27,7 @@ public class MessageListener {
         this.messageProducer = messageProducer;
     }
 
-
-
-public User listenerGetUserResponse(String userName) {
+    public User listenerGetUserResponse(String userName) {
         log.info("Get response to a request from Database 'get user'");
         messageProducer.sendMessage(userName, "frontGetUser");
         log.info("Send response to front 'get user' = {}", userName);
@@ -52,8 +47,7 @@ public User listenerGetUserResponse(String userName) {
         }
     } finally {
         consumer.close();
-    }
-
+        }
     }
 
 }
