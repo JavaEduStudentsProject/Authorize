@@ -18,7 +18,7 @@ public class MessageListener {
     ConcurrentKafkaListenerContainerFactory<String, User> factory;
 
     @Autowired
-            KafkaConsumerConfig config;
+    KafkaConsumerConfig config;
 
      KafkaListener kl;
 
@@ -46,7 +46,6 @@ public User listenerGetUserResponse(String userName) {
             for (ConsumerRecord<String, User> record : userRecords)
             {
                 user = record.value();
-                System.out.println(user);
                 return user;
             }
         }
