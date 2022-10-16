@@ -32,7 +32,6 @@ public class KafkaConsumerConfig {
 
         DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
         Map<String, Class<?>> classMap = new HashMap<>();
-//        classMap.put("org.example.commonlibs.Model.Hamster", Hamster.class);
         typeMapper.setIdClassMapping(classMap);
         typeMapper.addTrustedPackages("*");
 
