@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,7 @@ public class AuthController {
   @Autowired
   private MongoTemplate mt;
 
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -81,7 +83,7 @@ public class AuthController {
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
     List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
+        .map(GrantedAuthority::getAuthority)
         .collect(Collectors.toList());
 
     ResponseEntity<UserInfoResponse> responseEntity = ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
@@ -148,5 +150,12 @@ public class AuthController {
     messageUserProducer.sendMessage(user, "SaveUser");
     log.info("The user {} was sent to Database for save", user.getUsername());
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  }
+
+  @PostMapping("/update")
+  public ResponseEntity<?> updateUser(@RequestBody(required = false)  User userDetails) {
+    messageUserProducer.sendMessage(userDetails, "updateUserDB");
+    log.info("User {}", userDetails);
+    return ResponseEntity.ok(userDetails);
   }
 }
