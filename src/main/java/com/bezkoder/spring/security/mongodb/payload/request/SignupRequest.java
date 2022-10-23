@@ -1,10 +1,21 @@
 package com.bezkoder.spring.security.mongodb.payload.request;
 
+import lombok.Generated;
+import org.springframework.data.annotation.Id;
+
 import java.util.Set;
 
 import javax.validation.constraints.*;
 
 public class SignupRequest {
+
+  public String getId() {
+    return id;
+  }
+
+  @Id
+  private String id;
+
   @NotBlank
   @Size(min = 3, max = 20)
   private String username;
@@ -51,4 +62,6 @@ public class SignupRequest {
   public void setRole(Set<String> roles) {
     this.roles = roles;
   }
+
+
 }

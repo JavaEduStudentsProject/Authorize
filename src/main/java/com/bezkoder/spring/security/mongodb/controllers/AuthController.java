@@ -93,10 +93,8 @@ public class AuthController {
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 //    Role nj = new Role(ERole.ROLE_ADMIN);
 //    Role nj1 = new Role(ERole.ROLE_USER);
-//    Role nj2 = new Role(ERole.ROLE_MODERATOR);
 //    roleRepository.save(nj);
 //    roleRepository.save(nj1);
-//    roleRepository.save(nj2);
     System.out.println(signUpRequest.getUsername());
     List<User> list= mt.findAll(User.class);
     for (User l: list) {
@@ -139,6 +137,25 @@ public class AuthController {
     }
     user.setRoles(roles);
     messageUserProducer.sendMessage(user, "SaveUser");
+    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  }
+
+  @PostMapping("/update")
+  public ResponseEntity<?> updateUser(@RequestBody SignupRequest signUpRequest) {
+    System.out.println(signUpRequest.getEmail());
+    User newUser = new User();
+    System.out.println(signUpRequest.getUsername());
+    List<User> list= mt.findAll(User.class);
+    for (User l: list) {
+      if(l.getId().equals(signUpRequest.getId())) {
+        newUser=l;
+      }
+    }
+
+    newUser.setEmail(signUpRequest.getEmail());
+    newUser.setUsername(signUpRequest.getUsername());
+//    newUser.setPassword(encoder.encode(signUpRequest.getPassword()));
+    messageUserProducer.sendMessage(newUser, "updateUserDB");
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
