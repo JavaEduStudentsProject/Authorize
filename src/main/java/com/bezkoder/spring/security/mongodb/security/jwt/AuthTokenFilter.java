@@ -7,8 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,14 +17,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.bezkoder.spring.security.mongodb.security.services.UserDetailsServiceImpl;
 
+@Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtils jwtUtils;
 
   @Autowired
   private UserDetailsServiceImpl userDetailsService;
-
-  private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,7 +41,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } catch (Exception e) {
-      logger.error("Cannot set user authentication: {}", e);
+      log.error("Cannot set user authentication: {}", e);
     }
 
     filterChain.doFilter(request, response);

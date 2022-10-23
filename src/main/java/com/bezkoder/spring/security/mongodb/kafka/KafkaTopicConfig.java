@@ -11,7 +11,6 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Configuration
 public class KafkaTopicConfig {
 
@@ -29,19 +28,16 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic registerUser() {
-        log.info("Create topic registerUser");
         return new NewTopic("registerUser", 2, (short) 1);
     }
 
     @Bean
     public NewTopic parseFileParser() {
-        log.info("Create topic parseFileParser");
         return new NewTopic("parseFileParser", 1, (short) 1);
     }
 
     @Bean
     public NewTopic sendUser() {
-        log.info("Create topic sendUser");
         return new NewTopic("SendUser", 1, (short) 1);
     }
 }
