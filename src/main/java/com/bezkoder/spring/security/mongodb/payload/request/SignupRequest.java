@@ -1,6 +1,5 @@
 package com.bezkoder.spring.security.mongodb.payload.request;
 
-import lombok.Generated;
 import org.springframework.data.annotation.Id;
 
 import java.util.Set;
