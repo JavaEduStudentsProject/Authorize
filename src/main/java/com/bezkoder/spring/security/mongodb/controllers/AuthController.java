@@ -89,6 +89,10 @@ public class AuthController {
             .body(new UserInfoResponse(userDetails.getId(),
                     userDetails.getUsername(),
                     userDetails.getEmail(),
+                    userDetails.getFirstname(),
+                    userDetails.getLastname(),
+                    userDetails.getPhone(),
+                    userDetails.getImage(),
                     roles)
             );
     log.info("User {} sign in", Objects.requireNonNull(responseEntity.getBody()).getUsername());
@@ -163,8 +167,9 @@ public class AuthController {
       }
     }
 
-    newUser.setEmail(signUpRequest.getEmail());
-    newUser.setUsername(signUpRequest.getUsername());
+    newUser.setLastname(signUpRequest.getLastname());
+    newUser.setFirstname(signUpRequest.getFirstname());
+    newUser.setPhone(signUpRequest.getPhone());
 //    newUser.setPassword(encoder.encode(signUpRequest.getPassword()));
     messageUserProducer.sendMessage(newUser, "updateUserDB");
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
