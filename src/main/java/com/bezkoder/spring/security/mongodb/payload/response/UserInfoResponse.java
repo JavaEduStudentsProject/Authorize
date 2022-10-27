@@ -6,16 +6,26 @@ public class UserInfoResponse {
   private String id;
   private String username;
   private String email;
+  private String lastname;
+  private String firstname;
+  private String phone;
+  private String image;
   private List<String> roles;
 
-  public UserInfoResponse(String id, String username, String email, List<String> roles) {
+  public UserInfoResponse(String id, String username, String email, String firstname, String lastname, String phone, String image, List<String> roles) {
     this.id = id;
     this.username = username;
     this.email = email;
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.phone = phone;
+    this.image = image;
     this.roles = roles;
   }
 
-  public String getId() {
+
+
+    public String getId() {
     return id;
   }
 
@@ -41,5 +51,41 @@ public class UserInfoResponse {
 
   public List<String> getRoles() {
     return roles;
+  }
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+
+  public String getFirstname() {
+    return firstname;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
+
+  public void setRoles(List<String> roles) {
+    this.roles = roles;
   }
 }

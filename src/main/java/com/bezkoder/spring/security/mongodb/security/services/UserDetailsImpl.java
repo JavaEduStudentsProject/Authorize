@@ -20,32 +20,44 @@ public class UserDetailsImpl implements UserDetails {
   private String username;
 
   private String email;
+  private String lastname;
+  private String firstname;
+  private String phone;
+  private String image;
 
   @JsonIgnore
   private String password;
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(String id, String username, String email, String password,
-      Collection<? extends GrantedAuthority> authorities) {
+  public UserDetailsImpl(String id, String username, String email, String password, String lastname, String firstname, String phone, String image,
+                         Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
+    this.lastname = lastname;
+    this.firstname = firstname;
+    this.phone = phone;
+    this.image=image;
     this.authorities = authorities;
   }
 
   public static UserDetailsImpl build(User user) {
     List<GrantedAuthority> authorities = user.getRoles().stream()
-        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-        .collect(Collectors.toList());
+            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+            .collect(Collectors.toList());
 
     return new UserDetailsImpl(
-        user.getId(), 
-        user.getUsername(), 
-        user.getEmail(),
-        user.getPassword(), 
-        authorities);
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getLastname(),
+            user.getFirstname(),
+            user.getPhone(),
+            user.getImage(),
+            authorities);
   }
 
   @Override
@@ -70,6 +82,14 @@ public class UserDetailsImpl implements UserDetails {
   public String getUsername() {
     return username;
   }
+
+  public String getLastname() {return lastname;}
+
+  public String getFirstname() {return firstname;}
+
+  public String getPhone() {return phone;}
+
+  public String getImage() {return image;}
 
   @Override
   public boolean isAccountNonExpired() {
@@ -100,4 +120,5 @@ public class UserDetailsImpl implements UserDetails {
     UserDetailsImpl user = (UserDetailsImpl) o;
     return Objects.equals(id, user.id);
   }
+
 }

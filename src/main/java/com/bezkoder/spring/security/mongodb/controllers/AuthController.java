@@ -69,7 +69,6 @@ public class AuthController {
   @Autowired
   private MongoTemplate mt;
 
-
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -90,6 +89,10 @@ public class AuthController {
             .body(new UserInfoResponse(userDetails.getId(),
                     userDetails.getUsername(),
                     userDetails.getEmail(),
+                    userDetails.getFirstname(),
+                    userDetails.getLastname(),
+                    userDetails.getPhone(),
+                    userDetails.getImage(),
                     roles)
             );
     log.info("User {} sign in", Objects.requireNonNull(responseEntity.getBody()).getUsername());
@@ -153,9 +156,23 @@ public class AuthController {
   }
 
   @PostMapping("/update")
-  public ResponseEntity<?> updateUser(@RequestBody(required = false)  User userDetails) {
-    messageUserProducer.sendMessage(userDetails, "updateUserDB");
-    log.info("User {}", userDetails);
-    return ResponseEntity.ok(userDetails);
+  public ResponseEntity<?> updateUser(@RequestBody SignupRequest signUpRequest) {
+    System.out.println(signUpRequest.getEmail());
+    User newUser = new User();
+    System.out.println(signUpRequest.getUsername());
+    List<User> list= mt.findAll(User.class);
+    for (User l: list) {
+      if(l.getId().equals(signUpRequest.getId())) {
+        newUser=l;
+      }
+    }
+
+    newUser.setLastname(signUpRequest.getLastname());
+    newUser.setFirstname(signUpRequest.getFirstname());
+    newUser.setPhone(signUpRequest.getPhone());
+//    newUser.setPassword(encoder.encode(signUpRequest.getPassword()));
+    messageUserProducer.sendMessage(newUser, "updateUserDB");
+    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
+
 }

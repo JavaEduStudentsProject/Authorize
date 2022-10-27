@@ -1,10 +1,21 @@
 package com.bezkoder.spring.security.mongodb.payload.request;
 
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+
 import java.util.Set;
 
 import javax.validation.constraints.*;
 
 public class SignupRequest {
+
+  public String getId() {
+    return id;
+  }
+
+  @Id
+  private String id;
+
   @NotBlank
   @Size(min = 3, max = 20)
   private String username;
@@ -19,6 +30,12 @@ public class SignupRequest {
   @NotBlank
   @Size(min = 6, max = 40)
   private String password;
+
+  private String lastname;
+  private String firstname;
+  private String phone;
+  private String image;
+//  private Data birthDate;
 
   public String getUsername() {
     return username;
@@ -51,4 +68,49 @@ public class SignupRequest {
   public void setRole(Set<String> roles) {
     this.roles = roles;
   }
+
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public String getFirstname() {
+    return firstname;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+//  public Data getBirthDate() {
+//    return birthDate;
+//  }
+
+  public void setRoles(Set<String> roles) {
+    this.roles = roles;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
+
+//  public void setBirthDate(Data birthDate) {
+//    this.birthDate = birthDate;
+//  }
 }
