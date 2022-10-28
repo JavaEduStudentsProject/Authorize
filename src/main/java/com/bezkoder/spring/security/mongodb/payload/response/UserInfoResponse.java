@@ -1,5 +1,6 @@
 package com.bezkoder.spring.security.mongodb.payload.response;
 
+import java.util.Date;
 import java.util.List;
 
 public class UserInfoResponse {
@@ -10,9 +11,11 @@ public class UserInfoResponse {
   private String firstname;
   private String phone;
   private String image;
+  private String country;
+  private String dateOfBirth;
   private List<String> roles;
 
-  public UserInfoResponse(String id, String username, String email, String firstname, String lastname, String phone, String image, List<String> roles) {
+  public UserInfoResponse(String id, String username, String email, String firstname, String lastname, String phone, String image, String country, String dateOfBirth, List<String> roles) {
     this.id = id;
     this.username = username;
     this.email = email;
@@ -20,6 +23,8 @@ public class UserInfoResponse {
     this.lastname = lastname;
     this.phone = phone;
     this.image = image;
+    this.country = country;
+    this.dateOfBirth =dateOfBirth;
     this.roles = roles;
   }
 
@@ -87,5 +92,21 @@ public class UserInfoResponse {
 
   public void setRoles(List<String> roles) {
     this.roles = roles;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public String getDateOfBirth() {
+    return dateOfBirth;
+  }
+
+  public void setDateOfBirth(String dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
   }
 }

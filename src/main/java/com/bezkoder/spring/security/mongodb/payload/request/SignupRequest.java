@@ -3,6 +3,7 @@ package com.bezkoder.spring.security.mongodb.payload.request;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.validation.constraints.*;
@@ -35,6 +36,9 @@ public class SignupRequest {
   private String firstname;
   private String phone;
   private String image;
+  private String country;
+  private String dateOfBirth;
+
 //  private Data birthDate;
 
   public String getUsername() {
@@ -86,10 +90,6 @@ public class SignupRequest {
     return image;
   }
 
-//  public Data getBirthDate() {
-//    return birthDate;
-//  }
-
   public void setRoles(Set<String> roles) {
     this.roles = roles;
   }
@@ -110,7 +110,20 @@ public class SignupRequest {
     this.image = image;
   }
 
-//  public void setBirthDate(Data birthDate) {
-//    this.birthDate = birthDate;
-//  }
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+
+  public String getDateOfBirth() {
+    return dateOfBirth;
+  }
+
+  public void setDateOfBirth(String dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
+  }
 }

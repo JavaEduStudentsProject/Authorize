@@ -1,6 +1,7 @@
 package com.bezkoder.spring.security.mongodb.security.services;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,13 +25,16 @@ public class UserDetailsImpl implements UserDetails {
   private String firstname;
   private String phone;
   private String image;
+  private String country;
+  private String dateOfBirth;
+
 
   @JsonIgnore
   private String password;
 
   private Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(String id, String username, String email, String password, String lastname, String firstname, String phone, String image,
+  public UserDetailsImpl(String id, String username, String email, String password, String lastname, String firstname, String phone, String image, String country,String dateOfBirth,
                          Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.username = username;
@@ -40,6 +44,8 @@ public class UserDetailsImpl implements UserDetails {
     this.firstname = firstname;
     this.phone = phone;
     this.image=image;
+    this.country=country;
+    this.dateOfBirth=dateOfBirth;
     this.authorities = authorities;
   }
 
@@ -57,6 +63,8 @@ public class UserDetailsImpl implements UserDetails {
             user.getFirstname(),
             user.getPhone(),
             user.getImage(),
+            user.getCountry(),
+            user.getDateOfBirth(),
             authorities);
   }
 
@@ -90,6 +98,9 @@ public class UserDetailsImpl implements UserDetails {
   public String getPhone() {return phone;}
 
   public String getImage() {return image;}
+  public String getCountry() {return country;}
+
+  public String getDateOfBirth() {return dateOfBirth;}
 
   @Override
   public boolean isAccountNonExpired() {
@@ -120,5 +131,6 @@ public class UserDetailsImpl implements UserDetails {
     UserDetailsImpl user = (UserDetailsImpl) o;
     return Objects.equals(id, user.id);
   }
+
 
 }
