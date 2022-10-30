@@ -1,6 +1,7 @@
 package com.bezkoder.spring.security.mongodb.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.bezkoder.spring.security.mongodb.security.jwt.AuthEntryPointJwt;
 import com.bezkoder.spring.security.mongodb.security.jwt.AuthTokenFilter;
 import com.bezkoder.spring.security.mongodb.security.services.UserDetailsServiceImpl;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 //@EnableWebSecurity
@@ -27,12 +31,15 @@ import com.bezkoder.spring.security.mongodb.security.services.UserDetailsService
     // securedEnabled = true,
     // jsr250Enabled = true,
     prePostEnabled = true)
-public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecurityConfigurerAdapter {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
+
+  @Value("${upload.path}")
+  private String uploadPath;
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -96,5 +103,11 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     
     return http.build();
+  }
+
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry){
+      registry.addResourceHandler("img/**")
+              .addResourceLocations("file://"+uploadPath+"/");
   }
 }

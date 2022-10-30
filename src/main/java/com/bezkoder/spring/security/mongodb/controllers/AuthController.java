@@ -1,9 +1,8 @@
 package com.bezkoder.spring.security.mongodb.controllers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -13,6 +12,7 @@ import com.bezkoder.spring.security.mongodb.kafka.MessageProducer;
 import com.bezkoder.spring.security.mongodb.kafka.MessageUserProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -36,6 +36,7 @@ import com.bezkoder.spring.security.mongodb.repository.RoleRepository;
 import com.bezkoder.spring.security.mongodb.repository.UserRepository;
 import com.bezkoder.spring.security.mongodb.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.mongodb.security.services.UserDetailsImpl;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -69,11 +70,14 @@ public class AuthController {
   @Autowired
   private MongoTemplate mt;
 
+  @Value("${upload.path}")
+  private String uploadPath;
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -82,8 +86,8 @@ public class AuthController {
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
     List<String> roles = userDetails.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .collect(Collectors.toList());
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
     ResponseEntity<UserInfoResponse> responseEntity = ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .body(new UserInfoResponse(userDetails.getId(),
@@ -94,8 +98,8 @@ public class AuthController {
                     userDetails.getPhone(),
                     userDetails.getImage(),
                     userDetails.getCountry(),
-userDetails.getDateOfBirth(),
-                            roles)
+                    userDetails.getDateOfBirth(),
+                    roles)
             );
     log.info("User {} sign in", Objects.requireNonNull(responseEntity.getBody()).getUsername());
     return responseEntity;
@@ -110,15 +114,15 @@ userDetails.getDateOfBirth(),
 //    roleRepository.save(nj1);
 //    roleRepository.save(nj2);
     log.info("Try sign up user {}", signUpRequest.getUsername());
-    List<User> list= mt.findAll(User.class);
-    for (User l: list) {
-      if(l.getUsername().equals(signUpRequest.getUsername())) {
+    List<User> list = mt.findAll(User.class);
+    for (User l : list) {
+      if (l.getUsername().equals(signUpRequest.getUsername())) {
         log.info("Username {} is already taken", l.getUsername());
         return ResponseEntity
                 .badRequest()
                 .body(new MessageResponse("Error: Username is already taken!"));
       }
-      if(l.getEmail().equals(signUpRequest.getEmail())) {
+      if (l.getEmail().equals(signUpRequest.getEmail())) {
         log.info("Email {} is already taken", l.getEmail());
         return ResponseEntity
                 .badRequest()
@@ -128,15 +132,15 @@ userDetails.getDateOfBirth(),
 
     // Create new user's account
     User user = new User(signUpRequest.getUsername(),
-                         signUpRequest.getEmail(),
-                         encoder.encode(signUpRequest.getPassword()));
+            signUpRequest.getEmail(),
+            encoder.encode(signUpRequest.getPassword()));
 
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();
 
     if (strRoles == null) {
       Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
@@ -157,15 +161,41 @@ userDetails.getDateOfBirth(),
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
+  @PostMapping("/image")
+  public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @RequestBody SignupRequest signUpRequest) throws IOException {
+    User newUser = new User();
+    List<User> list = mt.findAll(User.class);
+    for (User l : list) {
+      if (l.getId().equals(signUpRequest.getId())) {
+        newUser = l;
+      }
+    }
+
+    if (file != null) {
+      File uploadDir = new File(uploadPath);
+      if (!uploadDir.exists()) {
+        uploadDir.mkdir();
+      }
+      String uuidFile = UUID.randomUUID().toString();
+      String resultFileName = uuidFile + "." + file.getOriginalFilename();
+//      file.transferTo(new File(uploadPath+"/"+resultFileName));
+      newUser.setImage(resultFileName);
+    }
+    messageUserProducer.sendMessage(newUser, "updateUserDB");
+    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  }
+
   @PostMapping("/update")
   public ResponseEntity<?> updateUser(@RequestBody SignupRequest signUpRequest) {
     System.out.println(signUpRequest.getEmail());
     User newUser = new User();
+
+
     System.out.println(signUpRequest.getUsername());
-    List<User> list= mt.findAll(User.class);
-    for (User l: list) {
-      if(l.getId().equals(signUpRequest.getId())) {
-        newUser=l;
+    List<User> list = mt.findAll(User.class);
+    for (User l : list) {
+      if (l.getId().equals(signUpRequest.getId())) {
+        newUser = l;
       }
     }
 
