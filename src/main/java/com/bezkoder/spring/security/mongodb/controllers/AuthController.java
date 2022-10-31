@@ -1,6 +1,5 @@
 package com.bezkoder.spring.security.mongodb.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,7 +11,6 @@ import com.bezkoder.spring.security.mongodb.kafka.MessageProducer;
 import com.bezkoder.spring.security.mongodb.kafka.MessageUserProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -69,9 +67,6 @@ public class AuthController {
 
   @Autowired
   private MongoTemplate mt;
-
-  @Value("${upload.path}")
-  private String uploadPath;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -162,7 +157,7 @@ public class AuthController {
   }
 
   @PostMapping("/image")
-  public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, @RequestBody SignupRequest signUpRequest) throws IOException {
+  public ResponseEntity<?> uploadAvatar(@RequestBody SignupRequest signUpRequest) throws IOException {
     User newUser = new User();
     List<User> list = mt.findAll(User.class);
     for (User l : list) {
@@ -171,16 +166,8 @@ public class AuthController {
       }
     }
 
-    if (file != null) {
-      File uploadDir = new File(uploadPath);
-      if (!uploadDir.exists()) {
-        uploadDir.mkdir();
-      }
-      String uuidFile = UUID.randomUUID().toString();
-      String resultFileName = uuidFile + "." + file.getOriginalFilename();
-//      file.transferTo(new File(uploadPath+"/"+resultFileName));
-      newUser.setImage(resultFileName);
-    }
+      newUser.setImage(signUpRequest.getImage());
+
     messageUserProducer.sendMessage(newUser, "updateUserDB");
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }

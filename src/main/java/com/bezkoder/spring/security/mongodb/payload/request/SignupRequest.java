@@ -39,8 +39,6 @@ public class SignupRequest {
   private String country;
   private String dateOfBirth;
 
-//  private Data birthDate;
-
   public String getUsername() {
     return username;
   }
